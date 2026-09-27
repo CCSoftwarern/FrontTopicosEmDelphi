@@ -1,0 +1,80 @@
+object dmBase: TdmBase
+  Height = 446
+  Width = 809
+  PixelsPerInch = 96
+  object RESTClientCategorias: TRESTClient
+    Accept = 'application/json, text/plain; q=0.9, text/html;q=0.8,'
+    AcceptCharset = 'utf-8, *;q=0.8'
+    BaseURL = 'http://localhost:5236/api'
+    Params = <>
+    Left = 88
+    Top = 24
+  end
+  object RESTRequestCategorias: TRESTRequest
+    AssignedValues = [rvConnectTimeout, rvReadTimeout]
+    Client = RESTClientCategorias
+    Params = <>
+    Response = RESTResponseCategorias
+    Left = 160
+    Top = 48
+  end
+  object RESTResponseCategorias: TRESTResponse
+    ContentType = 'application/json'
+    Left = 80
+    Top = 80
+  end
+  object RESTResponseDataSetAdapterCategorias: TRESTResponseDataSetAdapter
+    Active = True
+    Dataset = TabCategorias
+    FieldDefs = <>
+    Response = RESTResponseCategorias
+    Left = 80
+    Top = 120
+  end
+  object TabCategorias: TFDMemTable
+    Active = True
+    FieldDefs = <
+      item
+        Name = 'categoriaID'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'nome'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'descricao'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'ativo'
+        DataType = ftWideString
+        Size = 255
+      end
+      item
+        Name = 'produtos'
+        DataType = ftWideString
+        Size = 255
+      end>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvUpdateMode, uvLockMode, uvLockPoint, uvLockWait, uvRefreshMode, uvFetchGeneratorsPoint, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.LockWait = True
+    UpdateOptions.FetchGeneratorsPoint = gpNone
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 80
+    Top = 168
+  end
+  object DataSourceCategorias: TDataSource
+    DataSet = TabCategorias
+    Left = 80
+    Top = 232
+  end
+end
