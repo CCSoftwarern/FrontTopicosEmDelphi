@@ -1,0 +1,59 @@
+# Executáveis
+*.exe
+*.dll
+*.bpl
+*.dpl
+
+# Arquivos compilados Delphi
+*.dcu
+*.dcp
+*.bpi
+*.map
+*.rsm
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.~*
+*.log
+
+# Arquivos de backup
+*.identcache
+*.local
+*.tvsconfig
+
+# Arquivos gerados pelo Delphi
+__history/
+__recovery/
+*.stat
+*.otares
+
+# Pastas de saída
+Win32/
+Win64/
+Debug/
+Release/
+
+# Arquivos de usuário da IDE
+*.dsk
+*.tvsconfig
+
+# FastReport / componentes que geram arquivos temporários
+*.frf
+*.fr3.bak
+
+# Banco de dados local
+*.db
+*.db3
+*.sqlite
+*.sqlite3
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Visual Studio Code
+.vscode/
+
+# JetBrains
+.idea/
