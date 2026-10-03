@@ -79,7 +79,6 @@ procedure TFormMain.btnIncluirClick(Sender: TObject);
 var
   Json: TJSONObject;
 begin
-
 if (edtNome.Text = '') or (edtDescricao.Text = '') then
 begin
       MudarCorStatus($000606FF,$00C4C4FF,ShapeStatus,'Favor preencher os campos Nome e Descrição', lblStatus);
@@ -87,13 +86,11 @@ begin
 
 end;
 
-
   Json := TJSONObject.Create;
   try
     Json.AddPair('nome', edtNome.Text);
     Json.AddPair('descricao', edtDescricao.Text);
     Json.AddPair('ativo', 'S');
-
     ExecutarPost(
       dmBase.RESTClientCategoriasPost,
       dmBase.RESTRequestCategoriasPost,
@@ -101,7 +98,6 @@ end;
       edtUrlApi.Text + 'Categorias',
       Json
     );
-
   finally begin
     Json.Free;
     btnCarregar.Click;
@@ -114,19 +110,14 @@ procedure TFormMain.ExecutarConsulta(AClient: TRESTClient;
   ARequest: TRESTRequest; AResponse: TRESTResponse; const AEndpoint: string);
 begin
   AClient.BaseURL := edtUrlApi.Text+ AEndpoint;
-
   ARequest.Client := AClient;
   ARequest.Response := AResponse;
-
   ARequest.ExecuteAsync(
     procedure
     begin
-
       if (AResponse.StatusCode = 200) or (AResponse.StatusCode = 204) or (AResponse.StatusCode = 201) then begin
       MudarCorStatus($0033CC00,$0080FF00,ShapeStatus,AResponse.StatusText, lblStatus) ;
-
       end
-
 
       else
       MudarCorStatus($000606FF,$00C4C4FF,ShapeStatus,'Erro: ' +
@@ -141,22 +132,17 @@ procedure TFormMain.ExecutarPost(AClient: TRESTClient; ARequest: TRESTRequest;
   AResponse: TRESTResponse; const AEndpoint: string; Dados: TJSONObject);
 begin
   AClient.BaseURL := AEndpoint;
-
   ARequest.Client := AClient;
   ARequest.Response := AResponse;
   ARequest.Method := rmPOST;
-
   ARequest.Params.Clear;
   ARequest.AddBody(Dados.ToJSON, ctAPPLICATION_JSON);
-
   ARequest.ExecuteAsync(
     procedure
     begin
-
       if (AResponse.StatusCode = 200) or (AResponse.StatusCode = 204) or (AResponse.StatusCode = 201) then begin
       MudarCorStatus($0033CC00,$0080FF00,ShapeStatus,AResponse.StatusText, lblStatus) ;
       end
-
 
       else
       MudarCorStatus($000606FF,$00C4C4FF,ShapeStatus,'Erro: ' +

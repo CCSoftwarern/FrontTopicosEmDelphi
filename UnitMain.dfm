@@ -3,7 +3,7 @@ object FormMain: TFormMain
   Top = 0
   BorderStyle = bsSizeToolWin
   Caption = 'LojaDB'
-  ClientHeight = 640
+  ClientHeight = 620
   ClientWidth = 1081
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -11,13 +11,14 @@ object FormMain: TFormMain
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 15
   object PageControl1: TPageControl
     Left = 0
     Top = 0
     Width = 1081
-    Height = 640
+    Height = 620
     ActivePage = TabSheet1
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
@@ -28,6 +29,7 @@ object FormMain: TFormMain
     MultiLine = True
     ParentFont = False
     TabOrder = 0
+    ExplicitHeight = 640
     object TabSheet1: TTabSheet
       Caption = 'Categorias'
       object Label1: TLabel
