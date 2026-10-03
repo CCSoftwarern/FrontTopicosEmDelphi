@@ -27,6 +27,7 @@ type
     procedure btnCarregarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
     procedure btnIncluirClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     procedure ExecutarConsulta(AClient: TRESTClient;ARequest: TRESTRequest;AResponse: TRESTResponse;const AEndpoint: string);
@@ -49,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses UnitDmBase;
+uses UnitDmBase, UnitGlobal;
 
 procedure TFormMain.btnCarregarClick(Sender: TObject);
 begin
@@ -151,6 +152,12 @@ begin
     end
   );
 
+end;
+
+procedure TFormMain.FormShow(Sender: TObject);
+begin
+  btnExcluir.Enabled:= (UsuarioLogadoTipo = 2);
+  TabSheet2.TabVisible:=  (UsuarioLogadoTipo = 2);
 end;
 
 procedure TFormMain.MudarCorStatus(CorLinha, CorInterno: Tcolor;

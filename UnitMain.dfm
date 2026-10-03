@@ -12,6 +12,7 @@ object FormMain: TFormMain
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poScreenCenter
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 15
   object PageControl1: TPageControl
@@ -29,7 +30,6 @@ object FormMain: TFormMain
     MultiLine = True
     ParentFont = False
     TabOrder = 0
-    ExplicitHeight = 640
     object TabSheet1: TTabSheet
       Caption = 'Categorias'
       object Label1: TLabel
@@ -147,6 +147,7 @@ object FormMain: TFormMain
         Width = 185
         Height = 42
         Caption = 'Excluir'
+        Enabled = False
         TabOrder = 3
         OnClick = btnExcluirClick
       end
@@ -176,6 +177,7 @@ object FormMain: TFormMain
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#227'o'
       ImageIndex = 1
+      TabVisible = False
       object edtUrlApi: TLabeledEdit
         Left = 27
         Top = 48

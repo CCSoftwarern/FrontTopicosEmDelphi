@@ -1,10 +1,12 @@
 program FrontLojaDB;
 
 uses
-  Vcl.Forms, Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Controls,
   UnitMain in 'UnitMain.pas' {FormMain},
   UnitDmBase in 'UnitDmBase.pas' {dmBase: TDataModule},
-  UnitFrmLogin in 'UnitFrmLogin.pas' {FrmLogin};
+  UnitFrmLogin in 'UnitFrmLogin.pas' {FrmLogin},
+  UnitGlobal in 'UnitGlobal.pas';
 
 {$R *.res}
 
