@@ -4,21 +4,33 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Mask,
+  Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls,
   REST.Types, REST.Client, Data.Bind.Components, Data.Bind.ObjectScope, System.JSON;
 
 type
   TFrmLogin = class(TForm)
-    Bevel1: TBevel;
-    Button2: TButton;
-    edtEmail: TLabeledEdit;
-    edtSenha: TLabeledEdit;
+    pnlMarca: TPanel;
+    pnlAcento: TPanel;
+    lblMarca: TLabel;
+    lblSlogan: TLabel;
+    lblAcessoRestrito: TLabel;
+    pnlLogin: TPanel;
+    lblBoasVindas: TLabel;
+    lblSubtitulo: TLabel;
+    lblEmail: TLabel;
+    edtEmail: TEdit;
+    lblSenha: TLabel;
+    edtSenha: TEdit;
+    chkMostrarSenha: TCheckBox;
+    btnEntrar: TButton;
+    lblErro: TLabel;
     RESTClientLogin: TRESTClient;
     RESTRequestLogin: TRESTRequest;
     RESTResponseLogin: TRESTResponse;
-    procedure Button2Click(Sender: TObject);
+    procedure btnEntrarClick(Sender: TObject);
+    procedure chkMostrarSenhaClick(Sender: TObject);
   private
-    { Private declarations }
+    procedure MostrarErro(const AMensagem: string);
   public
     { Public declarations }
   end;
@@ -32,15 +44,35 @@ implementation
 
 uses UnitGlobal;
 
-procedure TFrmLogin.Button2Click(Sender: TObject);
+procedure TFrmLogin.MostrarErro(const AMensagem: string);
+begin
+  lblErro.Caption := AMensagem;
+  lblErro.Visible := AMensagem <> '';
+end;
+
+procedure TFrmLogin.chkMostrarSenhaClick(Sender: TObject);
+begin
+  if chkMostrarSenha.Checked then
+    edtSenha.PasswordChar := #0
+  else
+    edtSenha.PasswordChar := '*';
+end;
+
+procedure TFrmLogin.btnEntrarClick(Sender: TObject);
 var
   Json: string;
   JsonVal: TJSONValue;
   JsonObj: TJSONObject;
 begin
-  if (edtEmail.Text = '') or (edtSenha.Text = '') then
+  MostrarErro('');
+
+  if (Trim(edtEmail.Text) = '') or (edtSenha.Text = '') then
   begin
-    ShowMessage('Informe e-mail e senha!');
+    MostrarErro('Informe e-mail e senha.');
+    if Trim(edtEmail.Text) = '' then
+      edtEmail.SetFocus
+    else
+      edtSenha.SetFocus;
     Exit;
   end;
 
@@ -52,34 +84,40 @@ begin
           '}';
 
   RESTRequestLogin.AddBody(Json, ctAPPLICATION_JSON);
-  RESTRequestLogin.Execute;
+
+  try
+    RESTRequestLogin.Execute;
+  except
+    MostrarErro('N'#227'o foi poss'#237'vel conectar ao servidor.');
+    Exit;
+  end;
 
   if RESTResponseLogin.StatusCode <> 200 then
   begin
-    ShowMessage('E-mail ou senha inválidos.');
+    MostrarErro('E-mail ou senha inv'#225'lidos.');
     edtSenha.Clear;
     edtSenha.SetFocus;
     Exit;
   end;
 
-  // Verifica se veio conteúdo válido
+  // Verifica se veio conteudo valido
   if Trim(RESTResponseLogin.Content) = '' then
   begin
-    ShowMessage('Resposta vazia do servidor.');
+    MostrarErro('Resposta vazia do servidor.');
     Exit;
   end;
 
   JsonVal := TJSONObject.ParseJSONValue(RESTResponseLogin.Content);
   if not Assigned(JsonVal) then
   begin
-    ShowMessage('Resposta JSON inválida do servidor.');
+    MostrarErro('Resposta JSON inv'#225'lida do servidor.');
     Exit;
   end;
 
   try
     if not (JsonVal is TJSONObject) then
     begin
-      ShowMessage('Formato de resposta inesperado.');
+      MostrarErro('Formato de resposta inesperado.');
       Exit;
     end;
 

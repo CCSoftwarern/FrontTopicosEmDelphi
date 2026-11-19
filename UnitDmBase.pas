@@ -11,18 +11,9 @@ uses
 
 type
   TdmBase = class(TDataModule)
-    RESTClientCategorias: TRESTClient;
-    RESTRequestCategorias: TRESTRequest;
-    RESTResponseCategorias: TRESTResponse;
-    RESTResponseDataSetAdapterCategorias: TRESTResponseDataSetAdapter;
-    TabCategorias: TFDMemTable;
-    DataSourceCategorias: TDataSource;
     RESTClientCategoriasDelete: TRESTClient;
     RESTRequestCategoriasDelete: TRESTRequest;
     RESTResponseCategoriasDelete: TRESTResponse;
-    RESTClientCategoriasPost: TRESTClient;
-    RESTRequestCategoriasPost: TRESTRequest;
-    RESTResponseCategoriasPost: TRESTResponse;
   private
     { Private declarations }
   public

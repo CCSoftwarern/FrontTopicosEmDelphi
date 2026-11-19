@@ -5,40 +5,52 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Data.DB, Vcl.StdCtrls,
-  Vcl.Grids, Vcl.DBGrids, Vcl.Mask, Vcl.ExtCtrls,  REST.Client, System.JSON, REST.Types;
+  Vcl.Grids, Vcl.DBGrids, Vcl.Mask, Vcl.ExtCtrls,  REST.Client, System.JSON, REST.Types,
+  JvExControls, JvOutlookBar, AdvNavBar, System.ImageList, Vcl.ImgList,
+  cxImageList, cxGraphics, System.Actions, Vcl.ActnList,
+  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, dxNavBar, dxNavBarGroupItems, dxNavBarCollns,
+  cxClasses, dxNavBarBase, dxBarBuiltInMenu, cxPC, IdBaseComponent,
+  IdAntiFreezeBase, IdAntiFreeze;
 
 type
   TFormMain = class(TForm)
-    PageControl1: TPageControl;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    edtUrlApi: TLabeledEdit;
-    DBGrid1: TDBGrid;
-    Label1: TLabel;
-    btnCarregar: TButton;
-    btnIncluir: TButton;
-    Bevel1: TBevel;
-    lblMenu: TLabel;
-    btnExcluir: TButton;
-    ShapeStatus: TShape;
-    lblStatus: TLabel;
-    edtNome: TLabeledEdit;
-    edtDescricao: TLabeledEdit;
-    procedure btnCarregarClick(Sender: TObject);
-    procedure btnExcluirClick(Sender: TObject);
-    procedure btnIncluirClick(Sender: TObject);
+    Acoes: TActionManager;
+    acCadastroClientes: TAction;
+    img32x32: TcxImageList;
+    navBar: TdxNavBar;
+    navBarGroup1: TdxNavBarGroup;
+    navBarItemClientes: TdxNavBarItem;
+    acCategorias: TAction;
+    acProdutos: TAction;
+    navBarItemCategorias: TdxNavBarItem;
+    navBarItemProdutos: TdxNavBarItem;
+    navBarSeparator1: TdxNavBarSeparator;
+    navBarItemPedidos: TdxNavBarItem;
+    acPedidos: TAction;
+    acUsuarios: TAction;
+    navBarSeparator2: TdxNavBarSeparator;
+    navBarItemUsuarios: TdxNavBarItem;
+    acSair: TAction;
+    navBarSeparator3: TdxNavBarSeparator;
+    navBarItem1: TdxNavBarItem;
+    PageControlOperacoes: TcxPageControl;
+    img16x16: TcxImageList;
+    IdAntiFreeze1: TIdAntiFreeze;
+    procedure acCategoriasExecute(Sender: TObject);
+    procedure PageControlOperacoesCanCloseEx(Sender: TObject;
+      ATabIndex: Integer; var ACanClose: Boolean);
     procedure FormShow(Sender: TObject);
+    procedure acCadastroClientesExecute(Sender: TObject);
+    procedure acProdutosExecute(Sender: TObject);
+    procedure acPedidosExecute(Sender: TObject);
+
   private
     { Private declarations }
-    procedure ExecutarConsulta(AClient: TRESTClient;ARequest: TRESTRequest;AResponse: TRESTResponse;const AEndpoint: string);
-     procedure ExecutarPost(
-  AClient: TRESTClient;
-  ARequest: TRESTRequest;
-  AResponse: TRESTResponse;
-  const AEndpoint: string;
-  Dados: TJSONObject
-);
-    procedure MudarCorStatus(CorLinha, CorInterno: Tcolor; Shape:TShape; Mensagem:string; ALabel: Tlabel);
+    function  AcharAba(AFormClass: TFormClass): TcxTabSheet;
+  procedure NovaAba(AFormClass: TFormClass; const ACaption: string;
+      AFechar: Boolean; const AURL: string = ''; AImageIndex: Integer = -1);
+
   public
     { Public declarations }
   end;
@@ -50,124 +62,92 @@ implementation
 
 {$R *.dfm}
 
-uses UnitDmBase, UnitGlobal;
+uses UnitDmBase, UnitGlobal, UnitFrmCategorias, UnitClientes, UnitProdutos,
+  UnitPedidos;
 
-procedure TFormMain.btnCarregarClick(Sender: TObject);
+
+
+{ TFormMain }
+
+procedure TFormMain.acCadastroClientesExecute(Sender: TObject);
 begin
-ExecutarConsulta(
-  dmBase.RESTClientCategorias,
-  dmBase.RESTRequestCategorias,
-  dmBase.RESTResponseCategorias,
-  'Categorias'
-);
-
+ NovaAba(TFrmClientes, 'Clientes', True, '', 1);
 end;
 
-procedure TFormMain.btnExcluirClick(Sender: TObject);
+procedure TFormMain.acCategoriasExecute(Sender: TObject);
 begin
-ExecutarConsulta(
-  dmBase.RESTClientCategoriasDelete,
-  dmBase.RESTRequestCategoriasDelete,
-  dmBase.RESTResponseCategoriasDelete,
-  'Categorias/'+dmBase.TabCategorias.FieldByName('categoriaID').Text
-);
-
+ NovaAba(TFrmCategorias, 'Categorias', True, '', 1);
 end;
 
-
-procedure TFormMain.btnIncluirClick(Sender: TObject);
-
+function TFormMain.AcharAba(AFormClass: TFormClass): TcxTabSheet;
 var
-  Json: TJSONObject;
+  I: Integer;
 begin
-if (edtNome.Text = '') or (edtDescricao.Text = '') then
-begin
-      MudarCorStatus($000606FF,$00C4C4FF,ShapeStatus,'Favor preencher os campos Nome e Descrição', lblStatus);
-      abort;
-
+  Result := nil;
+  for I := 0 to PageControlOperacoes.PageCount - 1 do
+    if PageControlOperacoes.Pages[I].Tag = NativeInt(AFormClass) then
+      Exit(PageControlOperacoes.Pages[I]);
 end;
 
-  Json := TJSONObject.Create;
-  try
-    Json.AddPair('nome', edtNome.Text);
-    Json.AddPair('descricao', edtDescricao.Text);
-    Json.AddPair('ativo', 'S');
-    ExecutarPost(
-      dmBase.RESTClientCategoriasPost,
-      dmBase.RESTRequestCategoriasPost,
-      dmBase.RESTResponseCategoriasPost,
-      edtUrlApi.Text + 'Categorias',
-      Json
-    );
-  finally begin
-    Json.Free;
-    btnCarregar.Click;
-  end;
-  end;
+
+
+
+
+procedure TFormMain.acPedidosExecute(Sender: TObject);
+begin
+ NovaAba(TfrmPedido, 'Pedidos', True, '', 1);
 end;
 
-// criei a procedure pra diminuir a repetição de código
-procedure TFormMain.ExecutarConsulta(AClient: TRESTClient;
-  ARequest: TRESTRequest; AResponse: TRESTResponse; const AEndpoint: string);
+procedure TFormMain.acProdutosExecute(Sender: TObject);
 begin
-  AClient.BaseURL := edtUrlApi.Text+ AEndpoint;
-  ARequest.Client := AClient;
-  ARequest.Response := AResponse;
-  ARequest.ExecuteAsync(
-    procedure
-    begin
-      if (AResponse.StatusCode = 200) or (AResponse.StatusCode = 204) or (AResponse.StatusCode = 201) then begin
-      MudarCorStatus($0033CC00,$0080FF00,ShapeStatus,AResponse.StatusText, lblStatus) ;
-      end
-
-      else
-      MudarCorStatus($000606FF,$00C4C4FF,ShapeStatus,'Erro: ' +
-          AResponse.StatusCode.ToString + ' - ' +
-          AResponse.StatusText, lblStatus)
-    end
-  );
-
-end;
-
-procedure TFormMain.ExecutarPost(AClient: TRESTClient; ARequest: TRESTRequest;
-  AResponse: TRESTResponse; const AEndpoint: string; Dados: TJSONObject);
-begin
-  AClient.BaseURL := AEndpoint;
-  ARequest.Client := AClient;
-  ARequest.Response := AResponse;
-  ARequest.Method := rmPOST;
-  ARequest.Params.Clear;
-  ARequest.AddBody(Dados.ToJSON, ctAPPLICATION_JSON);
-  ARequest.ExecuteAsync(
-    procedure
-    begin
-      if (AResponse.StatusCode = 200) or (AResponse.StatusCode = 204) or (AResponse.StatusCode = 201) then begin
-      MudarCorStatus($0033CC00,$0080FF00,ShapeStatus,AResponse.StatusText, lblStatus) ;
-      end
-
-      else
-      MudarCorStatus($000606FF,$00C4C4FF,ShapeStatus,'Erro: ' +
-          AResponse.StatusCode.ToString + ' - ' +
-          AResponse.StatusText, lblStatus)
-    end
-  );
-
+ NovaAba(TFrmProdutos, 'Produtos', True, '', 1);
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
 begin
-  btnExcluir.Enabled:= (UsuarioLogadoTipo = 2);
-  TabSheet2.TabVisible:=  (UsuarioLogadoTipo = 2);
+Caption:= 'LojaDb - '+ UsuarioLogadoNome;
 end;
 
-procedure TFormMain.MudarCorStatus(CorLinha, CorInterno: Tcolor;
-  Shape: TShape; Mensagem:string; ALabel: Tlabel);
+procedure TFormMain.NovaAba(AFormClass: TFormClass; const ACaption: string;
+  AFechar: Boolean; const AURL: string; AImageIndex: Integer);
+var
+  Aba: TcxTabSheet;
+  Form: TForm;
 begin
-  Shape.Repaint;
-  Shape.Pen.Color:= CorLinha;
-  Shape.Brush.Color:= CorInterno;
-  ALabel.Caption:= Mensagem;
+  Aba := AcharAba(AFormClass);
+  if Aba <> nil then
+  begin
+    PageControlOperacoes.ActivePage := Aba;
+    Exit;
+  end;
 
+  Aba := TcxTabSheet.Create(PageControlOperacoes);
+  try
+    Aba.PageControl      := PageControlOperacoes;
+    Aba.Caption          := ACaption;
+    Aba.AllowCloseButton := AFechar;
+    Aba.ImageIndex       := AImageIndex;
+    Aba.Tag              := NativeInt(AFormClass);
+
+    Form := AFormClass.Create(Aba);
+    Form.BorderStyle := bsNone;
+    Form.Align       := alClient;
+    Form.Parent      := Aba;
+    Form.Show;
+
+    PageControlOperacoes.ActivePage := Aba;
+
+
+  except
+    Aba.Free;
+    raise;
+  end;
+end;
+
+procedure TFormMain.PageControlOperacoesCanCloseEx(Sender: TObject;
+  ATabIndex: Integer; var ACanClose: Boolean);
+begin
+ACanClose := True;
 end;
 
 end.
