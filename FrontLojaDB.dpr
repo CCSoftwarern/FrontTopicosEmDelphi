@@ -14,7 +14,9 @@ uses
   UnitProdutos in 'forms\UnitProdutos.pas' {frmProdutos},
   UnitCadastrarProduto in 'forms\UnitCadastrarProduto.pas' {frmCadastrarProduto},
   UnitPedidos in 'forms\UnitPedidos.pas' {frmPedido},
-  UnitCadastrarPedido in 'forms\UnitCadastrarPedido.pas' {frmCadastrarPedido};
+  UnitCadastrarPedido in 'forms\UnitCadastrarPedido.pas' {frmCadastrarPedido},
+  UnitUsuarios in 'forms\UnitUsuarios.pas' {frmUsuarios},
+  UnitCadastrarUsuario in 'forms\UnitCadastrarUsuario.pas' {frmCadastrarUsuario};
 
 {$R *.res}
 
@@ -34,6 +36,7 @@ begin
   Application.CreateForm(TfrmCadastrarCliente, frmCadastrarCliente);
   Application.CreateForm(TfrmCadastrarProduto, frmCadastrarProduto);
   Application.CreateForm(TfrmCadastrarPedido, frmCadastrarPedido);
+  Application.CreateForm(TfrmCadastrarUsuario, frmCadastrarUsuario);
   Application.Run;
 end.
 

@@ -11,7 +11,7 @@ uses
   Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, cxControls, cxLookAndFeels,
   cxLookAndFeelPainters, dxNavBar, dxNavBarGroupItems, dxNavBarCollns,
   cxClasses, dxNavBarBase, dxBarBuiltInMenu, cxPC, IdBaseComponent,
-  IdAntiFreezeBase, IdAntiFreeze;
+  IdAntiFreezeBase, IdAntiFreeze, System.UITypes;
 
 type
   TFormMain = class(TForm)
@@ -44,6 +44,8 @@ type
     procedure acCadastroClientesExecute(Sender: TObject);
     procedure acProdutosExecute(Sender: TObject);
     procedure acPedidosExecute(Sender: TObject);
+    procedure acUsuariosExecute(Sender: TObject);
+    procedure acSairExecute(Sender: TObject);
 
   private
     { Private declarations }
@@ -63,7 +65,7 @@ implementation
 {$R *.dfm}
 
 uses UnitDmBase, UnitGlobal, UnitFrmCategorias, UnitClientes, UnitProdutos,
-  UnitPedidos;
+  UnitPedidos, UnitUsuarios, UnitFrmLogin;
 
 
 
@@ -96,6 +98,50 @@ end;
 procedure TFormMain.acPedidosExecute(Sender: TObject);
 begin
  NovaAba(TfrmPedido, 'Pedidos', True, '', 1);
+end;
+
+procedure TFormMain.acUsuariosExecute(Sender: TObject);
+begin
+  if UsuarioLogadoTipo <> 2 then
+  begin
+    ShowMessage('Acesso restrito a administradores.');
+    Exit;
+  end;
+
+  NovaAba(TfrmUsuarios, 'Usu'#225'rios', True, '', 1);
+end;
+
+procedure TFormMain.acSairExecute(Sender: TObject);
+var
+  LLogin: TFrmLogin;
+  LEntrou: Boolean;
+begin
+  if MessageDlg('Deseja sair do sistema?', mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    Exit;
+
+  // Encerra a sessao atual: fecha as abas abertas e limpa o usuario logado.
+  while PageControlOperacoes.PageCount > 0 do
+    PageControlOperacoes.CloseTab(PageControlOperacoes.PageCount - 1);
+
+  UsuarioLogadoId := 0;
+  UsuarioLogadoNome := '';
+  UsuarioLogadoTipo := 0;
+
+  Hide;
+  LLogin := TFrmLogin.Create(nil);
+  try
+    LEntrou := LLogin.ShowModal = mrOk;
+  finally
+    LLogin.Free;
+  end;
+
+  if LEntrou then
+  begin
+    Caption := 'LojaDb - ' + UsuarioLogadoNome;
+    Show;
+  end
+  else
+    Application.Terminate;
 end;
 
 procedure TFormMain.acProdutosExecute(Sender: TObject);

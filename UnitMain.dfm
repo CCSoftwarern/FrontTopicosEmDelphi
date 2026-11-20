@@ -138,11 +138,13 @@ object FormMain: TFormMain
       Category = 'Seguran'#231'a'
       Caption = 'Usu'#225'rios'
       ImageIndex = 6
+      OnExecute = acUsuariosExecute
     end
     object acSair: TAction
       Category = 'Sistema'
       Caption = 'Logout'
       ImageIndex = 7
+      OnExecute = acSairExecute
     end
   end
   object img32x32: TcxImageList
